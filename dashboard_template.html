@@ -1,0 +1,957 @@
+<title>FIT Event Desk</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --paper:#F1F0F4;
+  --surface:#FFFFFF;
+  --surface-2:#F7F6FA;
+  --ink:#1A1722;
+  --ink-2:#453F52;
+  --muted:#6F6980;
+  --rule:#DFDCE6;
+  --rule-strong:#C9C4D4;
+  --accent:#B81E58;
+  --accent-soft:#FBE9F0;
+  --s-cal:#B81E58;
+  --s-eng:#1F6F5E;
+  --s-news:#9A5A12;
+  --s-live:#3F4C77;
+  --shadow:0 1px 2px rgba(26,23,34,.06);
+  --radius:3px;
+  --font-display:"Fraunces",Georgia,"Times New Roman",serif;
+  --font-body:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#131118;
+    --surface:#1C1A23;
+    --surface-2:#232029;
+    --ink:#EDEAF2;
+    --ink-2:#C2BCCE;
+    --muted:#948EA3;
+    --rule:#2E2A38;
+    --rule-strong:#413B4E;
+    --accent:#FF7AA6;
+    --accent-soft:#3A1F2C;
+    --s-cal:#FF7AA6;
+    --s-eng:#54C4A8;
+    --s-news:#E0A24E;
+    --s-live:#8D9AC9;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131118;
+  --surface:#1C1A23;
+  --surface-2:#232029;
+  --ink:#EDEAF2;
+  --ink-2:#C2BCCE;
+  --muted:#948EA3;
+  --rule:#2E2A38;
+  --rule-strong:#413B4E;
+  --accent:#FF7AA6;
+  --accent-soft:#3A1F2C;
+  --s-cal:#FF7AA6;
+  --s-eng:#54C4A8;
+  --s-news:#E0A24E;
+  --s-live:#8D9AC9;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+button{font:inherit;color:inherit}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 80px}
+
+/* ---------- masthead ---------- */
+.masthead{
+  padding:38px 0 22px;
+  border-bottom:2px solid var(--ink);
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:20px 32px;
+}
+.brand h1{
+  font-family:var(--font-display);
+  font-optical-sizing:auto;
+  font-weight:600;
+  font-size:clamp(30px,4.4vw,48px);
+  line-height:1.02;
+  letter-spacing:-.018em;
+  margin:0;
+  text-wrap:balance;
+}
+.brand .kicker{
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0 0 10px;
+}
+.brand .sub{margin:10px 0 0;color:var(--ink-2);max-width:56ch;font-size:14.5px}
+
+.stamp{
+  font-family:var(--font-mono);
+  font-size:11.5px;
+  line-height:1.7;
+  color:var(--muted);
+  text-align:right;
+  white-space:nowrap;
+}
+.stamp b{color:var(--ink);font-weight:500}
+
+/* ---------- tally strip ---------- */
+.tally{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0;
+  border-bottom:1px solid var(--rule);
+  margin-bottom:26px;
+}
+.tally .cell{
+  padding:14px 26px 14px 0;
+  margin-right:26px;
+  border-right:1px solid var(--rule);
+  display:flex;
+  align-items:baseline;
+  gap:9px;
+}
+.tally .cell:last-child{border-right:0}
+.tally .n{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:26px;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.tally .lbl{
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.swatch{width:9px;height:9px;border-radius:50%;flex:none;align-self:center}
+
+/* ---------- layout ---------- */
+.cols{display:grid;grid-template-columns:250px 1fr;gap:44px;align-items:start}
+@media (max-width:880px){.cols{grid-template-columns:1fr;gap:26px}}
+
+.rail{position:sticky;top:20px;display:flex;flex-direction:column;gap:24px}
+@media (max-width:880px){.rail{position:static}}
+
+.group>h2{
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0 0 10px;
+  font-weight:500;
+}
+
+.search{
+  width:100%;
+  padding:9px 11px;
+  border:1px solid var(--rule-strong);
+  border-radius:var(--radius);
+  background:var(--surface);
+  color:var(--ink);
+  font-size:14px;
+}
+.search::placeholder{color:var(--muted)}
+.search:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+
+.opts{display:flex;flex-direction:column;gap:2px}
+.opt{
+  display:flex;align-items:center;gap:9px;
+  padding:6px 8px 6px 6px;
+  border:0;background:none;
+  border-radius:var(--radius);
+  cursor:pointer;
+  text-align:left;
+  width:100%;
+  font-size:13.5px;
+  color:var(--ink-2);
+  transition:background .12s ease,color .12s ease;
+}
+.opt:hover{background:var(--surface-2)}
+.opt:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.opt .box{
+  width:14px;height:14px;flex:none;
+  border:1.5px solid var(--rule-strong);
+  border-radius:2px;
+  display:grid;place-items:center;
+  background:var(--surface);
+}
+.opt .box::after{content:"";width:7px;height:7px;border-radius:1px;background:transparent}
+.opt[aria-pressed="true"]{color:var(--ink);font-weight:500}
+.opt[aria-pressed="true"] .box{border-color:currentColor}
+.opt[aria-pressed="true"] .box::after{background:currentColor}
+.opt .count{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  padding:5px 11px;
+  border:1px solid var(--rule-strong);
+  background:var(--surface);
+  border-radius:100px;
+  font-family:var(--font-mono);
+  font-size:11px;
+  letter-spacing:.03em;
+  cursor:pointer;
+  color:var(--ink-2);
+  transition:.12s ease;
+}
+.chip:hover{border-color:var(--ink-2)}
+.chip:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+
+.btn{
+  width:100%;
+  padding:10px 12px;
+  border:1px solid var(--ink);
+  background:var(--ink);
+  color:var(--paper);
+  border-radius:var(--radius);
+  cursor:pointer;
+  font-family:var(--font-mono);
+  font-size:11.5px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  transition:opacity .12s ease;
+}
+.btn:hover{opacity:.86}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule-strong)}
+
+/* ---------- timeline ---------- */
+.day{border-top:1px solid var(--rule);display:grid;grid-template-columns:78px 1fr;gap:0}
+.day:first-of-type{border-top:2px solid var(--ink)}
+.daymark{padding:20px 16px 20px 0;position:sticky;top:20px;align-self:start}
+.daymark .num{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:34px;
+  line-height:.9;
+  letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;
+  display:block;
+}
+.daymark .dow{
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+  display:block;
+  margin-top:5px;
+}
+.daymark .mon{
+  font-family:var(--font-mono);
+  font-size:10.5px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--accent);
+  display:block;
+}
+.daymark.today .num{color:var(--accent)}
+@media (max-width:600px){
+  .day{grid-template-columns:1fr}
+  .daymark{position:static;padding:18px 0 4px;display:flex;align-items:baseline;gap:10px}
+  .daymark .num{font-size:26px}
+  .daymark .dow,.daymark .mon{margin-top:0}
+}
+
+.rows{display:flex;flex-direction:column}
+.row{
+  display:grid;
+  grid-template-columns:118px 1fr;
+  gap:14px;
+  padding:15px 0 15px 14px;
+  border-top:1px solid var(--rule);
+  border-left:3px solid var(--stripe,var(--rule-strong));
+  transition:background .12s ease;
+}
+.rows .row:first-child{border-top:0}
+.row:hover{background:var(--surface)}
+@media (max-width:600px){.row{grid-template-columns:1fr;gap:4px}}
+
+.when{
+  font-family:var(--font-mono);
+  font-size:12px;
+  color:var(--ink-2);
+  padding-top:2px;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.when .allday{color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-size:10.5px}
+
+.what .t{
+  font-weight:500;
+  font-size:15.5px;
+  line-height:1.32;
+  margin:0;
+  text-wrap:balance;
+}
+.what .t a{text-decoration:none;background-image:linear-gradient(currentColor,currentColor);background-size:0 1px;background-repeat:no-repeat;background-position:0 100%;transition:background-size .18s ease}
+.what .t a:hover{background-size:100% 1px}
+.what .t a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.meta{
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;
+  margin-top:5px;
+  font-size:12.5px;
+  color:var(--muted);
+}
+.meta .where{color:var(--ink-2)}
+.tag{
+  font-family:var(--font-mono);
+  font-size:10px;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  color:var(--stripe,var(--muted));
+  display:inline-flex;align-items:center;gap:5px;
+}
+.pill{
+  font-family:var(--font-mono);
+  font-size:9.5px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  padding:2px 6px;
+  border:1px solid var(--rule-strong);
+  border-radius:100px;
+  color:var(--muted);
+}
+.desc{margin:6px 0 0;font-size:13.5px;line-height:1.5;color:var(--ink-2);max-width:68ch}
+
+.empty{
+  padding:56px 20px;
+  text-align:center;
+  color:var(--muted);
+  border-top:2px solid var(--ink);
+}
+.empty p{margin:0 0 6px}
+.empty .big{font-family:var(--font-display);font-size:20px;color:var(--ink)}
+
+/* ---------- newsroom ---------- */
+.posts{margin-top:42px;border-top:2px solid var(--ink);padding-top:18px}
+.posts h2{
+  font-family:var(--font-display);
+  font-weight:600;font-size:21px;letter-spacing:-.012em;margin:0;
+}
+.posts-note{margin:5px 0 12px;font-size:13px;color:var(--muted);max-width:62ch}
+.posts .row{grid-template-columns:118px 1fr}
+@media (max-width:600px){.posts .row{grid-template-columns:1fr}}
+
+/* ---------- export ---------- */
+dialog.export{
+  border:1px solid var(--rule-strong);
+  border-radius:var(--radius);
+  background:var(--surface);
+  color:var(--ink);
+  padding:0;
+  width:min(720px,92vw);
+  box-shadow:0 18px 50px rgba(0,0,0,.22);
+}
+dialog.export::backdrop{background:rgba(20,17,26,.5)}
+.export .head{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:16px 20px;border-bottom:1px solid var(--rule);
+}
+.export .head h3{margin:0;font-family:var(--font-display);font-size:19px;font-weight:600}
+.export-actions{display:flex;flex-direction:column;gap:8px}
+.dlgbar{
+  display:flex;flex-wrap:wrap;gap:18px;
+  padding:12px 20px;border-bottom:1px solid var(--rule);
+  background:var(--surface-2);
+}
+.dlgbar[hidden]{display:none}
+.fld{display:flex;align-items:center;gap:8px}
+.fld>span{
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--muted);
+}
+.fld select{
+  font:inherit;font-size:13px;
+  padding:5px 8px;
+  border:1px solid var(--rule-strong);
+  border-radius:var(--radius);
+  background:var(--surface);color:var(--ink);
+}
+.fld select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.export textarea{
+  width:100%;height:46vh;border:0;resize:vertical;
+  padding:16px 20px;background:var(--surface-2);color:var(--ink);
+  font-family:var(--font-mono);font-size:12.5px;line-height:1.6;
+}
+.export textarea:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.export .foot{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--rule)}
+.export .foot .btn{width:auto;padding:9px 18px}
+
+/* ---------- sources ---------- */
+.sources{margin-top:52px;border-top:2px solid var(--ink);padding-top:20px}
+.sources h2{
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 14px;font-weight:500;
+}
+.feeds{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1px;background:var(--rule)}
+.feed{background:var(--paper);padding:14px 16px 14px 0}
+.feed .nm{display:flex;align-items:center;gap:8px;font-weight:500;font-size:13.5px}
+.feed .st{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;margin-top:6px}
+.feed .st.on{color:var(--s-eng)}
+.feed .st.off{color:var(--muted)}
+.feed .how{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.45}
+.note{margin-top:18px;font-size:12.5px;color:var(--muted);max-width:76ch;line-height:1.6}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="brand">
+      <p class="kicker">Gladys Marcus Library &middot; aggregated campus listings</p>
+      <h1>FIT Event Desk</h1>
+      <p class="sub">Every upcoming event FIT posts publicly, pulled from three separate feeds and merged into one list you can filter, skim, and paste into Liblist.</p>
+    </div>
+    <div class="stamp" id="stamp"></div>
+  </header>
+
+  <div class="tally" id="tally"></div>
+
+  <div class="cols">
+    <aside class="rail">
+      <div class="group">
+        <h2>Find</h2>
+        <input class="search" id="q" type="search" placeholder="Search title, place, org…" aria-label="Search events">
+      </div>
+
+      <div class="group">
+        <h2>Window</h2>
+        <div class="chips" id="ranges"></div>
+      </div>
+
+      <div class="group">
+        <h2>Sources</h2>
+        <div class="opts" id="srcopts"></div>
+      </div>
+
+      <div class="group">
+        <h2>Trim</h2>
+        <div class="opts" id="trimopts"></div>
+      </div>
+
+      <div class="group export-actions">
+        <button class="btn" id="draftBtn">Monthly draft</button>
+        <button class="btn ghost" id="exportBtn">Copy what's showing</button>
+      </div>
+    </aside>
+
+    <main id="feed" aria-live="polite"></main>
+  </div>
+
+  <section class="sources">
+    <h2>Where this comes from</h2>
+    <div class="feeds" id="feeds"></div>
+    <p class="note" id="srcnote"></p>
+  </section>
+</div>
+
+<dialog class="export" id="exportDlg" aria-labelledby="exportTitle">
+  <div class="head">
+    <h3 id="exportTitle">Plain-text listing</h3>
+    <span class="pill" id="exportCount"></span>
+  </div>
+  <div class="dlgbar" id="dlgbar">
+    <label class="fld" id="monthFld">
+      <span>Month</span>
+      <select id="monthSel"></select>
+    </label>
+    <label class="fld">
+      <span>Include</span>
+      <select id="depthSel">
+        <option value="highlights">Highlights only</option>
+        <option value="full">Everything in the month</option>
+      </select>
+    </label>
+  </div>
+  <textarea id="exportText" spellcheck="false"></textarea>
+  <div class="foot">
+    <button class="btn ghost" id="exportClose">Close</button>
+    <button class="btn" id="exportCopy">Copy to clipboard</button>
+  </div>
+</dialog>
+
+<script>
+const DATA = /*__FIT_EVENT_DATA__*/null;
+
+const TZ = "America/New_York";
+const SRC = {
+  "FIT Events Calendar":   {key:"cal",  color:"var(--s-cal)",  short:"Calendar"},
+  "Engage (clubs & orgs)": {key:"eng",  color:"var(--s-eng)",  short:"Engage"},
+  "FIT Newsroom":          {key:"news", color:"var(--s-news)", short:"Newsroom"},
+  "25Live":                {key:"live", color:"var(--s-live)", short:"25Live"},
+};
+const srcColor = s => (SRC[s] || {}).color || "var(--rule-strong)";
+
+const NOW = new Date(DATA.generated_at);
+const events = DATA.events.map(e => ({...e, _s:new Date(e.start), _e:e.end?new Date(e.end):null}));
+
+const dayFmt   = new Intl.DateTimeFormat("en-US",{timeZone:TZ,weekday:"short",month:"short",day:"numeric",year:"numeric"});
+const timeFmt  = new Intl.DateTimeFormat("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"});
+const stampFmt = new Intl.DateTimeFormat("en-US",{timeZone:TZ,dateStyle:"medium",timeStyle:"short"});
+
+function parts(d){
+  const o = {};
+  for (const p of dayFmt.formatToParts(d)) o[p.type] = p.value;
+  return o;                                    // {weekday, month, day, year}
+}
+const dayKey = d => { const p = parts(d); return `${p.year}-${p.month}-${p.day}`; };
+
+const state = {
+  q: "",
+  range: 30,
+  sources: new Set(Object.keys(SRC)),
+  hideRoutine: true,
+};
+
+/* ---------- filtering ---------- */
+function visible(){
+  const cutoff = state.range ? new Date(NOW.getTime() + state.range*864e5) : null;
+  const q = state.q.trim().toLowerCase();
+  return events.filter(e => {
+    if (!state.sources.has(e.source)) return false;
+    if (state.hideRoutine && e.routine) return false;
+    if (e.kind === "announcement") {
+      if (e._s < new Date(NOW.getTime() - 45*864e5)) return false;
+    } else {
+      if (cutoff && e._s > cutoff) return false;
+      if (e._s < new Date(NOW.getTime() - 864e5)) return false;
+    }
+    if (q) {
+      const hay = `${e.title} ${e.location} ${e.organizer} ${(e.categories||[]).join(" ")} ${e.description}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+/* ---------- render ---------- */
+function el(tag, cls, text){
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+
+function renderStamp(){
+  document.getElementById("stamp").innerHTML =
+    `Last refreshed<br><b>${stampFmt.format(NOW)}</b><br>${DATA.window.days}-day window`;
+}
+
+function renderTally(){
+  const wrap = document.getElementById("tally");
+  wrap.textContent = "";
+  const shown = visible();
+  const total = el("div","cell");
+  total.append(el("span","n",String(shown.length)), el("span","lbl","showing"));
+  wrap.append(total);
+  for (const [name, meta] of Object.entries(SRC)) {
+    const n = shown.filter(e => e.source === name).length;
+    if (!n && !events.some(e => e.source === name)) continue;
+    const c = el("div","cell");
+    const dot = el("span","swatch"); dot.style.background = meta.color;
+    c.append(dot, el("span","n",String(n)), el("span","lbl",meta.short));
+    wrap.append(c);
+  }
+}
+
+function renderRail(){
+  const ranges = [[7,"7 days"],[14,"2 weeks"],[30,"30 days"],[90,"3 months"],[0,"Everything"]];
+  const rw = document.getElementById("ranges");
+  rw.textContent = "";
+  for (const [days,label] of ranges) {
+    const b = el("button","chip",label);
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(state.range === days));
+    b.onclick = () => { state.range = days; render(); };
+    rw.append(b);
+  }
+
+  const so = document.getElementById("srcopts");
+  so.textContent = "";
+  for (const [name, meta] of Object.entries(SRC)) {
+    const n = events.filter(e => e.source === name).length;
+    if (!n) continue;
+    const b = el("button","opt");
+    b.type = "button";
+    b.style.color = state.sources.has(name) ? meta.color : "";
+    b.setAttribute("aria-pressed", String(state.sources.has(name)));
+    b.append(el("span","box"), el("span",null,meta.short), el("span","count",String(n)));
+    b.onclick = () => {
+      state.sources.has(name) ? state.sources.delete(name) : state.sources.add(name);
+      render();
+    };
+    so.append(b);
+  }
+
+  const to = document.getElementById("trimopts");
+  to.textContent = "";
+  const routineCount = events.filter(e => e.routine).length;
+  const toggles = [
+    ["hideRoutine", "Hide drop-in fitness classes", routineCount],
+  ];
+  for (const [key, label, count] of toggles) {
+    if (!count) continue;
+    const b = el("button","opt");
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(state[key]));
+    b.append(el("span","box"), el("span",null,label), el("span","count",String(count)));
+    b.onclick = () => { state[key] = !state[key]; render(); };
+    to.append(b);
+  }
+}
+
+function timeCell(e){
+  const c = el("div","when");
+  if (e.kind === "announcement") { c.append(el("span","allday","Posted")); return c; }
+  if (e.all_day) { c.append(el("span","allday","All day")); return c; }
+  let t = timeFmt.format(e._s).replace(":00","").toLowerCase();
+  if (e._e && e._e - e._s > 0 && e._e - e._s < 864e5) {
+    t += " – " + timeFmt.format(e._e).replace(":00","").toLowerCase();
+  }
+  c.textContent = t;
+  return c;
+}
+
+function renderFeed(){
+  const feed = document.getElementById("feed");
+  feed.textContent = "";
+  const all = visible();
+  const shown = all.filter(e => e.kind !== "announcement");
+  const posts = all.filter(e => e.kind === "announcement");
+
+  if (!shown.length && !posts.length) {
+    const box = el("div","empty");
+    box.append(el("p","big","Nothing matches that."),
+               el("p",null,"Widen the window, or switch a source back on."));
+    feed.append(box);
+    return;
+  }
+
+  if (!shown.length) {
+    const box = el("div","empty");
+    box.append(el("p","big","No scheduled events in this window."),
+               el("p",null,"Newsroom posts are below."));
+    feed.append(box);
+  }
+
+  const groups = new Map();
+  for (const e of shown) {
+    const k = dayKey(e._s);
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(e);
+  }
+
+  const todayKey = dayKey(NOW);
+  let lastMonth = null;
+
+  for (const [, list] of groups) {
+    const day = el("section","day");
+    const p = parts(list[0]._s);
+
+    const mark = el("div","daymark" + (dayKey(list[0]._s) === todayKey ? " today" : ""));
+    const monthLabel = p.year === parts(NOW).year ? p.month : `${p.month} ${p.year}`;
+    if (monthLabel !== lastMonth) { mark.append(el("span","mon",monthLabel)); lastMonth = monthLabel; }
+    mark.append(el("span","num",p.day), el("span","dow",p.weekday));
+    day.append(mark);
+
+    const rows = el("div","rows");
+    for (const e of list) {
+      const row = el("article","row");
+      row.style.setProperty("--stripe", srcColor(e.source));
+      row.append(timeCell(e));
+
+      const what = el("div","what");
+      const h = el("h3","t");
+      if (e.url) {
+        const a = el("a", null, e.title);
+        a.href = e.url; a.target = "_blank"; a.rel = "noopener";
+        h.append(a);
+      } else h.textContent = e.title;
+      what.append(h);
+
+      const meta = el("div","meta");
+      const tag = el("span","tag");
+      const dot = el("span","swatch"); dot.style.background = srcColor(e.source);
+      tag.append(dot, document.createTextNode((SRC[e.source]||{}).short || e.source));
+      meta.append(tag);
+      if (e.location) meta.append(el("span","where", e.location));
+      if (e.organizer) meta.append(el("span",null, e.organizer));
+      if (e.recurring && !e.routine) meta.append(el("span","pill", `${e.series_count}-part series`));
+      if ((e.also_in||[]).length) meta.append(el("span","pill","also in " + e.also_in.map(s => (SRC[s]||{}).short || s).join(", ")));
+      for (const c of (e.categories||[]).slice(0,2)) meta.append(el("span","pill", c));
+      what.append(meta);
+
+      if (e.description) what.append(el("p","desc", e.description));
+      row.append(what);
+      rows.append(row);
+    }
+    day.append(rows);
+    feed.append(day);
+  }
+
+  if (posts.length) {
+    const sec = el("section","posts");
+    const h = el("h2",null,"Recently from the Newsroom");
+    const note = el("p","posts-note","Announcements rather than dated events — worth scanning for things that turn into listings.");
+    sec.append(h, note);
+    const list = el("div","rows");
+    for (const e of posts) {
+      const row = el("article","row");
+      row.style.setProperty("--stripe", srcColor(e.source));
+      const when = el("div","when");
+      const p = parts(e._s);
+      when.append(el("span","allday", `${p.month} ${p.day}`));
+      row.append(when);
+      const what = el("div","what");
+      const t = el("h3","t");
+      const a = el("a", null, e.title);
+      a.href = e.url; a.target = "_blank"; a.rel = "noopener";
+      t.append(a);
+      what.append(t);
+      if (e.description) what.append(el("p","desc", e.description));
+      row.append(what);
+      list.append(row);
+    }
+    sec.append(list);
+    feed.append(sec);
+  }
+}
+
+function renderSources(){
+  const wrap = document.getElementById("feeds");
+  wrap.textContent = "";
+  for (const s of DATA.sources) {
+    const f = el("div","feed");
+    const nm = el("div","nm");
+    const dot = el("span","swatch"); dot.style.background = srcColor(s.source);
+    nm.append(dot, document.createTextNode(s.source));
+    f.append(nm);
+    f.append(el("div", "st " + (s.ok ? "on" : "off"),
+      s.ok ? `Live · ${s.count} pulled` : "Not included"));
+    f.append(el("div","how", s.method || ""));
+    wrap.append(f);
+  }
+  document.getElementById("srcnote").textContent =
+    "Instagram and Facebook club posts sit behind a login and are not collected. 25Live is reachable but returns room bookings and semester containers rather than public events, so it stays off unless you switch it on when refreshing.";
+}
+
+/* ---------- export ---------- */
+function buildText(){
+  const all = visible();
+  const lines = [];
+  let lastKey = null;
+  for (const e of all.filter(x => x.kind !== "announcement")) {
+    const k = dayKey(e._s);
+    if (k !== lastKey) {
+      const p = parts(e._s);
+      const head = `${p.weekday}, ${p.month} ${p.day}`;
+      lines.push("", head, "-".repeat(head.length));
+      lastKey = k;
+    }
+    const when = e.all_day ? "All day — "
+      : timeFmt.format(e._s).replace(":00","").toLowerCase() + " — ";
+    let line = `${when}${e.title}`;
+    if (e.location) line += ` (${e.location})`;
+    lines.push(line);
+    if (e.url) lines.push(`   ${e.url}`);
+  }
+  const posts = all.filter(x => x.kind === "announcement");
+  if (posts.length) {
+    lines.push("", "FROM THE NEWSROOM", "-".repeat(17));
+    for (const e of posts) {
+      const p = parts(e._s);
+      lines.push(`${p.month} ${p.day} — ${e.title}`);
+      if (e.url) lines.push(`   ${e.url}`);
+    }
+  }
+  return `FIT events — compiled ${stampFmt.format(NOW)}\n${lines.join("\n").trim()}\n`;
+}
+
+/* ---------- monthly draft ---------- */
+const ymFmt    = new Intl.DateTimeFormat("en-US",{timeZone:TZ,year:"numeric",month:"2-digit"});
+const monthFmt = new Intl.DateTimeFormat("en-US",{timeZone:TZ,year:"numeric",month:"long"});
+const shortFmt = new Intl.DateTimeFormat("en-US",{timeZone:TZ,month:"short",day:"numeric"});
+
+function ym(d){
+  const o = {};
+  for (const p of ymFmt.formatToParts(d)) o[p.type] = p.value;
+  return `${o.year}-${o.month}`;
+}
+
+function monthOptions(){
+  const seen = new Map();
+  for (const e of events) {
+    if (e.kind === "announcement") continue;
+    const k = ym(e._s);
+    if (!seen.has(k)) seen.set(k, monthFmt.format(e._s));
+  }
+  return [...seen.entries()].sort((a,b) => a[0] < b[0] ? -1 : 1);
+}
+
+function buildDraft(monthKey, depth){
+  const inMonth = events.filter(e =>
+    e.kind !== "announcement" &&
+    state.sources.has(e.source) &&
+    ym(e._s) === monthKey &&
+    (depth === "full" || !e.routine)
+  );
+
+  const label = inMonth.length ? monthFmt.format(inMonth[0]._s) : monthKey;
+  const out = [
+    `FIT EVENTS — ${label.toUpperCase()}`,
+    `Compiled ${stampFmt.format(NOW)} from the FIT events calendar, Engage, and the Newsroom.`,
+  ];
+
+  if (!inMonth.length) {
+    out.push("", "(Nothing listed for this month yet.)");
+    return out.join("\n") + "\n";
+  }
+
+  // Collapse a repeated title into its first occurrence, listing the other dates.
+  const byTitle = new Map();
+  for (const e of inMonth) {
+    const k = e.title.trim().toLowerCase();
+    if (!byTitle.has(k)) byTitle.set(k, []);
+    byTitle.get(k).push(e);
+  }
+  const emitted = new Set();
+
+  let lastDay = null;
+  for (const e of inMonth) {
+    const k = e.title.trim().toLowerCase();
+    if (emitted.has(k)) continue;
+    emitted.add(k);
+    const siblings = byTitle.get(k);
+
+    const day = dayKey(e._s);
+    if (day !== lastDay) {
+      const p = parts(e._s);
+      out.push("", `${p.weekday}, ${p.month} ${p.day}`);
+      lastDay = day;
+    }
+    const when = e.all_day ? "All day" : timeFmt.format(e._s).replace(":00","").toLowerCase();
+    let line = `  ${when}  ${e.title}`;
+    if (e.location) line += ` — ${e.location}`;
+    out.push(line);
+    if (siblings.length > 1) {
+      out.push(`        Also ${siblings.slice(1).map(s => shortFmt.format(s._s)).join(", ")}`);
+    }
+    if (e.url) out.push(`        ${e.url}`);
+  }
+
+  const posts = events.filter(e =>
+    e.kind === "announcement" &&
+    state.sources.has(e.source) &&
+    e._s >= new Date(NOW.getTime() - 45*864e5)
+  );
+  if (posts.length) {
+    out.push("", "ALSO WORTH A LOOK — from the FIT Newsroom");
+    for (const e of posts) {
+      out.push(`  ${shortFmt.format(e._s)}  ${e.title}`);
+      if (e.url) out.push(`        ${e.url}`);
+    }
+  }
+  return out.join("\n") + "\n";
+}
+
+/* ---------- dialog ---------- */
+let mode = "selection";
+
+function refreshDialog(){
+  const ta = document.getElementById("exportText");
+  const bar = document.getElementById("dlgbar");
+  const title = document.getElementById("exportTitle");
+  const count = document.getElementById("exportCount");
+
+  if (mode === "draft") {
+    bar.hidden = false;
+    title.textContent = "Monthly draft for Liblist";
+    const monthKey = document.getElementById("monthSel").value;
+    const depth = document.getElementById("depthSel").value;
+    ta.value = buildDraft(monthKey, depth);
+    count.textContent = "editable";
+  } else {
+    bar.hidden = true;
+    title.textContent = "Everything currently showing";
+    ta.value = buildText();
+    count.textContent = visible().length + " items";
+  }
+  ta.setSelectionRange(0,0);
+  ta.scrollTop = 0;
+}
+
+function openExport(which){
+  mode = which;
+  const dlg = document.getElementById("exportDlg");
+  if (which === "draft") {
+    const sel = document.getElementById("monthSel");
+    if (!sel.options.length) {
+      for (const [key, label] of monthOptions()) {
+        const o = document.createElement("option");
+        o.value = key; o.textContent = label;
+        sel.append(o);
+      }
+      const here = ym(NOW);
+      sel.value = [...sel.options].some(o => o.value === here) ? here : sel.options[0].value;
+    }
+  }
+  refreshDialog();
+  dlg.showModal();
+  const ta = document.getElementById("exportText");
+  ta.focus({preventScroll:true});
+  ta.setSelectionRange(0,0);
+  ta.scrollTop = 0;
+}
+
+/* ---------- wiring ---------- */
+function render(){ renderTally(); renderRail(); renderFeed(); }
+
+document.getElementById("q").addEventListener("input", ev => { state.q = ev.target.value; render(); });
+document.getElementById("exportBtn").addEventListener("click", () => openExport("selection"));
+document.getElementById("draftBtn").addEventListener("click", () => openExport("draft"));
+document.getElementById("monthSel").addEventListener("change", refreshDialog);
+document.getElementById("depthSel").addEventListener("change", refreshDialog);
+document.getElementById("exportClose").addEventListener("click", () => document.getElementById("exportDlg").close());
+document.getElementById("exportCopy").addEventListener("click", async ev => {
+  const ta = document.getElementById("exportText");
+  ta.select();
+  let ok = false;
+  try { await navigator.clipboard.writeText(ta.value); ok = true; }
+  catch (_) { try { ok = document.execCommand("copy"); } catch (_) {} }
+  ev.target.textContent = ok ? "Copied" : "Press ⌘C / Ctrl-C";
+  setTimeout(() => { ev.target.textContent = "Copy to clipboard"; }, 2200);
+});
+
+renderStamp();
+renderSources();
+render();
+</script>
